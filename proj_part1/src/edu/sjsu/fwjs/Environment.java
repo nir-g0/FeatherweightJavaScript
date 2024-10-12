@@ -4,13 +4,14 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class Environment {
-    private Map<String,Value> env = new HashMap<String,Value>();
+    private Map<String, Value> env = new HashMap<String, Value>();
     private Environment outerEnv;
 
     /**
      * Constructor for global environment
      */
-    public Environment() {}
+    public Environment() {
+    }
 
     /**
      * Constructor for local environment of a function
@@ -27,8 +28,13 @@ public class Environment {
      * null is returned (similar to how JS returns undefined.
      */
     public Value resolveVar(String varName) {
-        // YOUR CODE HERE
-        return null;
+        if (env.containsKey(varName)) {
+            return env.get(varName);
+        } else if (outerEnv != null) {
+            return outerEnv.resolveVar(varName);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -38,6 +44,13 @@ public class Environment {
      */
     public void updateVar(String key, Value v) {
         // YOUR CODE HERE
+        if (env.containsKey(key)) {
+            env.replace(key, v);
+        } else if (outerEnv != null) {
+            outerEnv.updateVar(key, v);
+        } else {
+            this.createVar(key, v);
+        }
     }
 
     /**
@@ -47,5 +60,10 @@ public class Environment {
      */
     public void createVar(String key, Value v) {
         // YOUR CODE HERE
+        if (env.containsKey(key)) {
+            throw new RuntimeException("Variable has been defined in the current scope already");
+        } else {
+            env.put(key, v);
+        }
     }
 }
