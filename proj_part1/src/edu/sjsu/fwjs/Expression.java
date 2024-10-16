@@ -3,6 +3,8 @@ package edu.sjsu.fwjs;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
+
 /**
  * FWJS expressions.
  */
@@ -85,7 +87,7 @@ class BinOpExpr implements Expression {
         if (v1 instanceof IntVal && v2 instanceof IntVal) {
             int x = ((IntVal) v1).toInt();
             int y = ((IntVal) v2).toInt();
-
+            // ADD, SUBTRACT, MULTIPLY, DIVIDE, MOD, GT, GE, LT, LE, EQ
             switch (this.op) {
                 case ADD:
                     return new IntVal(x + y);
@@ -95,6 +97,18 @@ class BinOpExpr implements Expression {
                     return new IntVal(x / y);
                 case MULTIPLY:
                     return new IntVal(x * y);
+                case MOD:
+                    return new IntVal(x % y);
+                case GT:
+                    return new BoolVal(x > y);
+                case GE:
+                    return new BoolVal(x >= y);
+                case LT:
+                    return new BoolVal(x < y);
+                case LE:
+                    return new BoolVal(x <= y);
+                case EQ:
+                    return new BoolVal(x == y);
             }
         }
         return null;
@@ -128,7 +142,9 @@ class IfExpr implements Expression {
                 return v3;
             }
         }
-        return null;
+
+        throw new RuntimeException("Bad IF expression");
+
     }
 }
 
@@ -145,7 +161,7 @@ class WhileExpr implements Expression {
     }
 
     public Value evaluate(Environment env) {
-        while (this.cond.evaluate(env) instanceof BoolVal && ((BoolVal) this.cond.evaluate(env)).toBoolean()) {
+        while (((BoolVal) this.cond.evaluate(env)).toBoolean()) {
             this.body.evaluate(env);
         }
         return null;
@@ -183,8 +199,8 @@ class VarDeclExpr implements Expression {
     }
 
     public Value evaluate(Environment env) {
-        // YOUR CODE HERE
-        return null;
+        env.createVar(varName, exp.evaluate(env));
+        return env.resolveVar(varName);
     }
 }
 
@@ -203,8 +219,8 @@ class AssignExpr implements Expression {
     }
 
     public Value evaluate(Environment env) {
-        // YOUR CODE HERE
-        return null;
+        env.updateVar(varName, e.evaluate(env));
+        return env.resolveVar(varName);
     }
 }
 
@@ -221,8 +237,7 @@ class FunctionDeclExpr implements Expression {
     }
 
     public Value evaluate(Environment env) {
-        // YOUR CODE HERE
-        return null;
+        return new ClosureVal(params, body, env);
     }
 }
 
@@ -239,7 +254,11 @@ class FunctionAppExpr implements Expression {
     }
 
     public Value evaluate(Environment env) {
-        // YOUR CODE HERE
-        return null;
+        ClosureVal closure = (ClosureVal) f.evaluate(env);
+        List<Value> argVals = new ArrayList<Value>();
+        for (Expression arg : args) {
+            argVals.add(arg.evaluate(env));
+        }
+        return closure.apply(argVals);
     }
 }
