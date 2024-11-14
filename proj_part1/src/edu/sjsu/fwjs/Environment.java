@@ -28,10 +28,10 @@ public class Environment {
      * null is returned (similar to how JS returns undefined.
      */
     public Value resolveVar(String varName) {
-        if (env.containsKey(varName)) {
-            return env.get(varName);
-        } else if (outerEnv != null) {
-            return outerEnv.resolveVar(varName);
+        if (this.env.containsKey(varName)) {
+            return this.env.get(varName);
+        } else if (this.outerEnv != null) {
+            return this.outerEnv.resolveVar(varName);
         } else {
             return new NullVal();
         }
@@ -44,10 +44,10 @@ public class Environment {
      */
     public void updateVar(String key, Value v) {
         // YOUR CODE HERE
-        if (env.containsKey(key)) {
-            env.replace(key, v);
+        if (this.env.containsKey(key)) {
+            this.env.replace(key, v);
         } else if (outerEnv != null) {
-            outerEnv.updateVar(key, v);
+            this.outerEnv.updateVar(key, v);
         } else {
             this.createVar(key, v);
         }
@@ -60,10 +60,10 @@ public class Environment {
      */
     public void createVar(String key, Value v) {
         // YOUR CODE HERE
-        if (env.containsKey(key)) {
+        if (this.env.containsKey(key)) {
             throw new RuntimeException("Variable has been defined in the current scope already");
         } else {
-            env.put(key, v);
+            this.env.put(key, v);
         }
     }
 }

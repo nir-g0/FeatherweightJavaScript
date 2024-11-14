@@ -1,5 +1,5 @@
 # Update these variables to match the locations
-JUNIT_JAR=lib/junit-4.12.jar
+JUNIT_JAR=lib/junit-4.13.2.jar
 HAMCREST_JAR=lib/hamcrest-core-1.3.jar
 
 # These variables should not need to be changed

@@ -44,7 +44,7 @@ class VarExpr implements Expression {
     }
 
     public Value evaluate(Environment env) {
-        return env.resolveVar(varName);
+        return env.resolveVar(this.varName);
     }
 }
 
@@ -59,8 +59,7 @@ class PrintExpr implements Expression {
     }
 
     public Value evaluate(Environment env) {
-        Value v = exp.evaluate(env);
-        System.out.println(v.toString());
+        Value v = this.exp.evaluate(env);
         return v;
     }
 }
@@ -84,33 +83,33 @@ class BinOpExpr implements Expression {
     public Value evaluate(Environment env) {
         Value v1 = this.e1.evaluate(env);
         Value v2 = this.e2.evaluate(env);
-        if (v1 instanceof IntVal && v2 instanceof IntVal) {
-            int x = ((IntVal) v1).toInt();
-            int y = ((IntVal) v2).toInt();
-            // ADD, SUBTRACT, MULTIPLY, DIVIDE, MOD, GT, GE, LT, LE, EQ
-            switch (this.op) {
-                case ADD:
-                    return new IntVal(x + y);
-                case SUBTRACT:
-                    return new IntVal(x - y);
-                case DIVIDE:
-                    return new IntVal(x / y);
-                case MULTIPLY:
-                    return new IntVal(x * y);
-                case MOD:
-                    return new IntVal(x % y);
-                case GT:
-                    return new BoolVal(x > y);
-                case GE:
-                    return new BoolVal(x >= y);
-                case LT:
-                    return new BoolVal(x < y);
-                case LE:
-                    return new BoolVal(x <= y);
-                case EQ:
-                    return new BoolVal(x == y);
-            }
+
+        int x = ((IntVal) v1).toInt();
+        int y = ((IntVal) v2).toInt();
+        // ADD, SUBTRACT, MULTIPLY, DIVIDE, MOD, GT, GE, LT, LE, EQ
+        switch (this.op) {
+            case ADD:
+                return new IntVal(x + y);
+            case SUBTRACT:
+                return new IntVal(x - y);
+            case DIVIDE:
+                return new IntVal(x / y);
+            case MULTIPLY:
+                return new IntVal(x * y);
+            case MOD:
+                return new IntVal(x % y);
+            case GT:
+                return new BoolVal(x > y);
+            case GE:
+                return new BoolVal(x >= y);
+            case LT:
+                return new BoolVal(x < y);
+            case LE:
+                return new BoolVal(x <= y);
+            case EQ:
+                return new BoolVal(x == y);
         }
+
         return null;
     }
 }
@@ -135,15 +134,11 @@ class IfExpr implements Expression {
         Value v2 = this.thn.evaluate(env);
         Value v3 = this.els.evaluate(env);
 
-        if (v1 instanceof BoolVal) {
-            if (((BoolVal) v1).toBoolean()) {
-                return v2;
-            } else {
-                return v3;
-            }
+        if (((BoolVal) v1).toBoolean()) {
+            return v2;
+        } else {
+            return v3;
         }
-
-        throw new RuntimeException("Bad IF expression");
 
     }
 }
@@ -181,8 +176,8 @@ class SeqExpr implements Expression {
     }
 
     public Value evaluate(Environment env) {
-        e1.evaluate(env);
-        return e2.evaluate(env);
+        this.e1.evaluate(env);
+        return this.e2.evaluate(env);
     }
 }
 
@@ -199,8 +194,8 @@ class VarDeclExpr implements Expression {
     }
 
     public Value evaluate(Environment env) {
-        env.createVar(varName, exp.evaluate(env));
-        return env.resolveVar(varName);
+        env.createVar(this.varName, this.exp.evaluate(env));
+        return env.resolveVar(this.varName);
     }
 }
 
@@ -219,8 +214,8 @@ class AssignExpr implements Expression {
     }
 
     public Value evaluate(Environment env) {
-        env.updateVar(varName, e.evaluate(env));
-        return env.resolveVar(varName);
+        env.updateVar(this.varName, e.evaluate(env));
+        return env.resolveVar(this.varName);
     }
 }
 
@@ -237,7 +232,7 @@ class FunctionDeclExpr implements Expression {
     }
 
     public Value evaluate(Environment env) {
-        return new ClosureVal(params, body, env);
+        return new ClosureVal(this.params, this.body, env);
     }
 }
 
@@ -254,9 +249,9 @@ class FunctionAppExpr implements Expression {
     }
 
     public Value evaluate(Environment env) {
-        ClosureVal closure = (ClosureVal) f.evaluate(env);
+        ClosureVal closure = (ClosureVal) this.f.evaluate(env);
         List<Value> argVals = new ArrayList<Value>();
-        for (Expression arg : args) {
+        for (Expression arg : this.args) {
             argVals.add(arg.evaluate(env));
         }
         return closure.apply(argVals);

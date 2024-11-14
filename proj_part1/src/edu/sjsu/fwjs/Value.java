@@ -100,8 +100,8 @@ class ClosureVal implements Value {
     public String toString() {
         String s = "function(";
         String sep = "";
-        for (int i = 0; i < params.size(); i++) {
-            s += sep + params.get(i);
+        for (int i = 0; i < this.params.size(); i++) {
+            s += sep + this.params.get(i);
             sep = ",";
         }
         s += ") {...};";
@@ -118,6 +118,6 @@ class ClosureVal implements Value {
         for (int i = 0; i < argVals.size(); i++) {
             local.createVar(params.get(i), argVals.get(i));
         }
-        return body.evaluate(local);
+        return this.body.evaluate(local);
     }
 }
